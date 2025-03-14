@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Тестирование мессенджера</title>
+  <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .container {
+      display: flex;
+      flex: 1;
+      max-width: 1200px;
+      margin: 20px auto;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      background-color: white;
+    }
+    .sidebar {
+      width: 300px;
+      background-color: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid #e1e4e8;
+    }
+    .header {
+      padding: 15px;
+      background-color: #4F46E5;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .header h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+    .chat-list {
+      flex: 1;
+      overflow-y: auto;
+    }
+    .chat-item {
+      padding: 12px 15px;
+      border-bottom: 1px solid #e1e4e8;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .chat-item:hover {
+      background-color: #e6e6e6;
+    }
+    .chat-item.active {
+      background-color: #e3f2fd;
+      border-left: 4px solid #4F46E5;
+    }
+    .chat-item h3 {
+      margin: 0 0 5px 0;
+      font-size: 16px;
+    }
+    .chat-item p {
+      margin: 0;
+      color: #657786;
+      font-size: 14px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .chat {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .chat-header {
+      padding: 15px;
+      border-bottom: 1px solid #e1e4e8;
+      display: flex;
+      align-items: center;
+    }
+    .chat-header h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .message {
+      max-width: 70%;
+      padding: 10px 15px;
+      border-radius: 18px;
+      font-size: 14px;
+      position: relative;
+      margin-bottom: 5px;
+    }
+    .message.sent {
+      align-self: flex-end;
+      background-color: #4F46E5;
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+    .message.received {
+      align-self: flex-start;
+      background-color: #e6e6e6;
+      border-bottom-left-radius: 4px;
+    }
+    .message-time {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.7);
+      position: absolute;
+      bottom: -18px;
+      right: 10px;
+    }
+    .message.received .message-time {
+      color: #657786;
+    }
+    .message-form {
+      padding: 15px;
+      display: flex;
+      gap: 10px;
+      border-top: 1px solid #e1e4e8;
+    }
+    .message-input {
+      flex: 1;
+      padding: 12px;
+      border: 1px solid #e1e4e8;
+      border-radius: 20px;
+      outline: none;
+    }
+    .send-button {
+      background-color: #4F46E5;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 0 20px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .send-button:hover {
+      background-color: #3c36b0;
+    }
+    .login-container {
+      display: flex;
+      flex-direction: column;
+      max-width: 400px;
+      margin: 100px auto;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      background-color: white;
+    }
+    .login-container h2 {
+      margin-top: 0;
+      text-align: center;
+      color: #4F46E5;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #e1e4e8;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+    .login-button {
+      width: 100%;
+      padding: 12px;
+      background-color: #4F46E5;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.2s;
+    }
+    .login-button:hover {
+      background-color: #3c36b0;
+    }
+    .error-message {
+      color: #e53e3e;
+      margin-top: 10px;
+      text-align: center;
+    }
+    .add-chat-button {
+      background-color: #4F46E5;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .new-chat-form {
+      padding: 15px;
+      border-bottom: 1px solid #e1e4e8;
+      display: none;
+    }
+    .new-chat-form.visible {
+      display: block;
+    }
+    .user-select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border: 1px solid #e1e4e8;
+    }
+    .create-chat-button {
+      width: 100%;
+      padding: 10px;
+      background-color: #4F46E5;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .status-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 5px;
+    }
+    .status-online {
+      background-color: #10b981;
+    }
+    .status-offline {
+      background-color: #9ca3af;
+    }
+  </style>
+</head>
+<body>
+  <div id="login-screen" class="login-container">
+    <h2>Вход в мессенджер</h2>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" value="edem@mail.ru" placeholder="Введите email">
+    </div>
+    <div class="form-group">
+      <label for="password">Пароль</label>
+      <input type="password" id="password" value="edem123" placeholder="Введите пароль">
+    </div>
+    <button id="login-button" class="login-button">Войти</button>
+    <p id="error-message" class="error-message"></p>
+    <div style="margin-top: 15px; text-align: center;">
+      <button id="check-server-button" style="background: #2e7d32; color: white; border: none; border-radius: 5px; padding: 8px 12px; cursor: pointer; margin-right: 10px;">Проверить сервер</button>
+      <button id="open-swagger-button" style="background: #0277bd; color: white; border: none; border-radius: 5px; padding: 8px 12px; cursor: pointer;">Открыть API Docs</button>
+    </div>
+  </div>
+
+  <div id="messenger" style="display: none;" class="container">
+    <div class="sidebar">
+      <div class="header">
+        <h2>Чаты</h2>
+        <button id="add-chat-button" class="add-chat-button">+</button>
+      </div>
+      <div id="new-chat-form" class="new-chat-form">
+        <select id="user-select" class="user-select">
+          <option value="" disabled selected>Выберите пользователя</option>
+        </select>
+        <button id="create-chat-button" class="create-chat-button">Создать чат</button>
+      </div>
+      <div id="chat-list" class="chat-list">
+        <!-- Список чатов будет добавлен сюда -->
+      </div>
+    </div>
+    <div class="chat">
+      <div class="chat-header">
+        <h2 id="current-chat-name">Выберите чат</h2>
+      </div>
+      <div id="chat-messages" class="chat-messages">
+        <!-- Сообщения будут добавлены сюда -->
+      </div>
+      <form id="message-form" class="message-form">
+        <input type="text" id="message-input" class="message-input" placeholder="Введите сообщение..." disabled>
+        <button type="submit" class="send-button" disabled>Отправить</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Глобальные переменные
+    let token = '';
+    let userId = null;
+    let socket = null;
+    let notificationSocket = null;
+    let currentChat = null;
+    let allUsers = [];
+    let notificationsEnabled = true;
+    const notificationSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
+
+    // DOM элементы
+    const loginScreen = document.getElementById('login-screen');
+    const messengerScreen = document.getElementById('messenger');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const loginButton = document.getElementById('login-button');
+    const errorMessage = document.getElementById('error-message');
+    const chatList = document.getElementById('chat-list');
+    const chatMessages = document.getElementById('chat-messages');
+    const messageForm = document.getElementById('message-form');
+    const messageInput = document.getElementById('message-input');
+    const currentChatName = document.getElementById('current-chat-name');
+    const addChatButton = document.getElementById('add-chat-button');
+    const newChatForm = document.getElementById('new-chat-form');
+    const userSelect = document.getElementById('user-select');
+    const createChatButton = document.getElementById('create-chat-button');
+    const checkServerButton = document.getElementById('check-server-button');
+    const openSwaggerButton = document.getElementById('open-swagger-button');
+
+    // API базовый URL
+    const API_URL = 'http://localhost:3000';
+
+    // Функция входа
+    async function login() {
+      try {
+        console.log('Попытка входа для:', emailInput.value);
+        const response = await fetch(`${API_URL}/api/v1/auth/email/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: emailInput.value,
+            password: passwordInput.value
+          })
+        });
+
+        console.log('Статус ответа авторизации:', response.status);
+        
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => null);
+          console.error('Ошибка авторизации:', errorData);
+          throw new Error('Неверный email или пароль');
+        }
+
+        const data = await response.json();
+        console.log('Полученные данные авторизации:', data);
+        
+        if (data.token?.accessToken) {
+          token = data.token.accessToken;
+        } else if (typeof data.token === 'string') {
+          token = data.token;
+        } else if (data.accessToken) {
+          token = data.accessToken;
+        } else {
+          console.error('Неизвестная структура токена:', data);
+          throw new Error('Не удалось определить формат токена');
+        }
+        
+        const meUrl = `${API_URL}/api/v1/auth/me`;
+        const userResponse = await fetch(meUrl, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (!userResponse.ok) {
+          throw new Error('Не удалось получить информацию о пользователе');
+        }
+        
+        const userData = await userResponse.json();
+        userId = userData.id;
+
+        // Показываем экран мессенджера
+        loginScreen.style.display = 'none';
+        messengerScreen.style.display = 'flex';
+        errorMessage.textContent = '';
+
+        // Запрашиваем разрешение на уведомления сразу после входа
+        await requestNotificationPermission();
+
+        // Показываем тестовое уведомление
+        await showNotification(
+          'Добро пожаловать',
+          'Вы успешно вошли в мессенджер'
+        );
+
+        // Инициализируем мессенджер
+        initMessenger();
+      } catch (error) {
+        console.error('Ошибка входа:', error);
+        errorMessage.textContent = error.message;
+      }
+    }
+
+    // Инициализация мессенджера
+    async function initMessenger() {
+      // Получаем список пользователей
+      await loadUsers();
+
+      // Загружаем список чатов
+      await loadChats();
+
+      // Подключаемся к WebSocket
+      connectWebSocket();
+      
+      // Подключаемся к WebSocket уведомлений
+      connectNotificationsWebSocket();
+    }
+
+    // Загрузка пользователей
+    async function loadUsers() {
+      try {
+        console.log('Запрос пользователей по URL:', `${API_URL}/api/v1/users`);
+        
+        const response = await fetch(`${API_URL}/api/v1/users`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        console.log('Статус ответа:', response.status);
+        
+        if (!response.ok) {
+          throw new Error(`Не удалось загрузить пользователей. Статус: ${response.status}`);
+        }
+
+        const responseData = await response.json();
+        console.log('Ответ API пользователей:', responseData);
+        
+        // Проверяем различные форматы ответа
+        let users = [];
+        if (Array.isArray(responseData)) {
+          // Если ответ - непосредственно массив пользователей
+          users = responseData;
+        } else if (responseData.data && Array.isArray(responseData.data)) {
+          // Если ответ - объект с полем data, содержащим массив
+          users = responseData.data;
+        } else if (responseData.items && Array.isArray(responseData.items)) {
+          // Если ответ - объект с полем items, содержащим массив
+          users = responseData.items;
+        } else {
+          console.error('Неожиданный формат ответа API пользователей:', responseData);
+          return;
+        }
+        
+        allUsers = users;
+        console.log('Найдено пользователей:', users.length);
+
+        // Заполняем выпадающий список пользователей
+        userSelect.innerHTML = '<option value="" disabled selected>Выберите пользователя</option>';
+        
+        if (users.length === 0) {
+          const option = document.createElement('option');
+          option.value = "";
+          option.textContent = "Нет доступных пользователей";
+          option.disabled = true;
+          userSelect.appendChild(option);
+          return;
+        }
+        
+        users.forEach(user => {
+          if (user.id !== userId) { // Не показываем текущего пользователя
+            try {
+              const option = document.createElement('option');
+              option.value = user.id;
+              
+              // Формируем текст с обработкой отсутствующих полей
+              let displayText = '';
+              
+              if (user.firstName || user.lastName) {
+                displayText += `${user.firstName || ''} ${user.lastName || ''}`.trim();
+              }
+              
+              if (user.email) {
+                if (displayText) {
+                  displayText += ` (${user.email})`;
+                } else {
+                  displayText = user.email;
+                }
+              }
+              
+              if (!displayText) {
+                displayText = `Пользователь ID:${user.id}`;
+              }
+              
+              option.textContent = displayText;
+              userSelect.appendChild(option);
+              console.log('Добавлен пользователь в список:', displayText);
+            } catch (err) {
+              console.error('Ошибка при добавлении пользователя в список:', user, err);
+            }
+          }
+        });
+      } catch (error) {
+        console.error('Ошибка загрузки пользователей:', error);
+        errorMessage.textContent = `Ошибка загрузки пользователей: ${error.message}`;
+      }
+    }
+
+    // Загрузка списка чатов
+    async function loadChats() {
+      try {
+        console.log('Запрос списка чатов:', `${API_URL}/api/v1/messenger`);
+        
+        const response = await fetch(`${API_URL}/api/v1/messenger`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Не удалось загрузить чаты');
+        }
+
+        const chats = await response.json();
+        updateChatList(chats);
+      } catch (error) {
+        console.error('Ошибка загрузки чатов:', error);
+      }
+    }
+
+    // Обновление списка чатов
+    function updateChatList(chats) {
+      chatList.innerHTML = '';
+
+      chats.forEach(chat => {
+        const chatItem = document.createElement('div');
+        chatItem.className = 'chat-item';
+        chatItem.dataset.id = chat.id;
+
+        // Определяем название чата
+        let chatName = chat.name;
+        if (!chatName && chat.type === 'direct') {
+          // Для личного чата показываем имя собеседника
+          const otherUser = chat.participants.find(p => p.id !== userId);
+          if (otherUser) {
+            chatName = `${otherUser.firstName} ${otherUser.lastName}`;
+          } else {
+            chatName = 'Неизвестный собеседник';
+          }
+        }
+
+        chatItem.innerHTML = `
+          <h3>${chatName}</h3>
+          <p>Нажмите, чтобы открыть чат</p>
+        `;
+
+        chatItem.addEventListener('click', () => openChat(chat));
+        chatList.appendChild(chatItem);
+      });
+    }
+
+    // Открытие чата
+    async function openChat(chat) {
+      // Сначала убираем активный класс со всех чатов
+      document.querySelectorAll('.chat-item').forEach(item => {
+        item.classList.remove('active');
+      });
+
+      // Добавляем активный класс к выбранному чату
+      const chatItem = document.querySelector(`.chat-item[data-id="${chat.id}"]`);
+      if (chatItem) {
+        chatItem.classList.add('active');
+      }
+
+      currentChat = chat;
+
+      // Определяем название чата
+      let chatName = chat.name;
+      if (!chatName && chat.type === 'direct') {
+        // Для личного чата показываем имя собеседника
+        const otherUser = chat.participants.find(p => p.id !== userId);
+        if (otherUser) {
+          chatName = `${otherUser.firstName} ${otherUser.lastName}`;
+        } else {
+          chatName = 'Неизвестный собеседник';
+        }
+      }
+
+      currentChatName.textContent = chatName;
+      
+      // Разблокируем поле ввода сообщения
+      messageInput.disabled = false;
+      messageForm.querySelector('button').disabled = false;
+
+      // Загружаем сообщения чата
+      await loadMessages(chat.id);
+    }
+
+    // Загрузка сообщений чата
+    async function loadMessages(chatId) {
+      try {
+        console.log('Запрос сообщений чата:', `${API_URL}/api/v1/messenger/${chatId}/messages`);
+        
+        const response = await fetch(`${API_URL}/api/v1/messenger/${chatId}/messages`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Не удалось загрузить сообщения');
+        }
+
+        const messages = await response.json();
+        updateChatMessages(messages);
+      } catch (error) {
+        console.error('Ошибка загрузки сообщений:', error);
+      }
+    }
+
+    // Обновление списка сообщений
+    function updateChatMessages(messages) {
+      chatMessages.innerHTML = '';
+
+      messages.forEach(message => {
+        const messageElement = document.createElement('div');
+        messageElement.className = `message ${message.sender.id === userId ? 'sent' : 'received'}`;
+        messageElement.dataset.id = message.id;
+
+        const formattedDate = new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        messageElement.innerHTML = `
+          ${message.content}
+          <span class="message-time">${formattedDate}</span>
+        `;
+
+        chatMessages.appendChild(messageElement);
+      });
+
+      // Прокручиваем к последнему сообщению
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      // Отмечаем сообщения как прочитанные
+      const unreadMessages = messages
+        .filter(message => message.sender.id !== userId && message.status !== 'read')
+        .map(message => message.id);
+
+      if (unreadMessages.length > 0) {
+        markMessagesAsRead(currentChat.id, unreadMessages);
+      }
+    }
+
+    // Отправка сообщения
+    async function sendMessage(content) {
+      if (!currentChat || !content.trim()) return;
+
+      try {
+        // Отправляем через WebSocket для мгновенного отображения
+        if (socket && socket.connected) {
+          socket.emit('sendMessage', {
+            conversationId: currentChat.id,
+            content: content.trim()
+          });
+        } else {
+          // Резервный вариант через REST API
+          await fetch(`${API_URL}/api/v1/messenger/messages`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              conversationId: currentChat.id,
+              content: content.trim()
+            })
+          });
+
+          // Обновляем сообщения
+          await loadMessages(currentChat.id);
+        }
+      } catch (error) {
+        console.error('Ошибка отправки сообщения:', error);
+      }
+    }
+
+    // Отметка сообщений как прочитанные
+    async function markMessagesAsRead(chatId, messageIds) {
+      try {
+        // Отправляем через WebSocket для мгновенной обработки
+        if (socket && socket.connected) {
+          socket.emit('markAsRead', {
+            conversationId: chatId,
+            messageIds: messageIds
+          });
+        } else {
+          // Резервный вариант через REST API
+          await fetch(`${API_URL}/api/v1/messenger/${chatId}/read`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              messageIds: messageIds
+            })
+          });
+        }
+      } catch (error) {
+        console.error('Ошибка отметки сообщений как прочитанные:', error);
+      }
+    }
+
+    // Создание нового чата
+    async function createChat(participantId) {
+      try {
+        console.log('Создание нового чата с пользователем ID:', participantId);
+        
+        const response = await fetch(`${API_URL}/api/v1/messenger/conversations`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            type: 'direct',
+            participants: [participantId]
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('Не удалось создать чат');
+        }
+
+        const newChat = await response.json();
+        
+        // Обновляем список чатов
+        await loadChats();
+        
+        // Открываем новый чат
+        openChat(newChat);
+        
+        // Скрываем форму создания чата
+        newChatForm.classList.remove('visible');
+      } catch (error) {
+        console.error('Ошибка создания чата:', error);
+      }
+    }
+
+    // Запрос разрешения на отправку уведомлений
+    async function requestNotificationPermission() {
+      try {
+        if (!("Notification" in window)) {
+          console.log("Этот браузер не поддерживает уведомления");
+          return false;
+        }
+
+        // Запрашиваем разрешение
+        const permission = await Notification.requestPermission();
+        notificationsEnabled = permission === "granted";
+        console.log('Разрешение на уведомления:', permission);
+        
+        if (notificationsEnabled) {
+          console.log("Уведомления включены!");
+          return true;
+        } else {
+          console.log("Уведомления отключены");
+          return false;
+        }
+      } catch (error) {
+        console.error('Ошибка при запросе разрешения на уведомления:', error);
+        return false;
+      }
+    }
+
+    // Показ уведомления
+    async function showNotification(title, body, icon = null) {
+      try {
+        // Проверяем поддержку уведомлений
+        if (!("Notification" in window)) {
+          console.log("Этот браузер не поддерживает уведомления");
+          return;
+        }
+
+        // Если разрешение еще не запрошено
+        if (Notification.permission === "default") {
+          const granted = await requestNotificationPermission();
+          if (!granted) return;
+        }
+
+        // Если разрешение отклонено
+        if (Notification.permission === "denied") {
+          console.log("Уведомления заблокированы пользователем");
+          return;
+        }
+
+        // Воспроизводим звук
+        try {
+          await notificationSound.play();
+        } catch (err) {
+          console.log('Ошибка воспроизведения звука:', err);
+        }
+        
+        // Создаем уведомление
+        const notification = new Notification(title, {
+          body: body,
+          icon: icon || 'https://via.placeholder.com/64',
+          tag: 'message-notification',
+          silent: true, // Отключаем стандартный звук уведомления
+          requireInteraction: true // Уведомление не будет автоматически скрываться
+        });
+
+        notification.onclick = function() {
+          window.focus();
+          this.close();
+        };
+
+        console.log('Уведомление показано:', { title, body });
+      } catch (error) {
+        console.error('Ошибка при показе уведомления:', error);
+      }
+    }
+
+    // Подключение к WebSocket
+    function connectWebSocket() {
+      console.log('Подключение к WebSocket:', `${API_URL}/v1/messenger`);
+      
+      socket = io(`${API_URL}/v1/messenger`, {
+        auth: { token }
+      });
+
+      socket.on('connect', () => {
+        console.log('WebSocket подключен');
+      });
+
+      socket.on('disconnect', () => {
+        console.log('WebSocket отключен');
+      });
+
+      socket.on('connect_error', (error) => {
+        console.error('Ошибка подключения WebSocket:', error);
+      });
+
+      // Слушаем события нового сообщения
+      socket.on('newMessage', async (message) => {
+        console.log('Получено новое сообщение:', message);
+        
+        // Если сообщение от другого пользователя
+        if (message.sender.id !== userId) {
+          try {
+            // Находим информацию о отправителе
+            const sender = allUsers.find(u => u.id === message.sender.id);
+            const senderName = sender ? 
+              `${sender.firstName} ${sender.lastName}`.trim() : 
+              'Неизвестный отправитель';
+            
+            // Принудительно запрашиваем разрешение, если оно не получено
+            if (Notification.permission !== "granted") {
+              const permission = await Notification.requestPermission();
+              notificationsEnabled = permission === "granted";
+            }
+            
+            // Показываем уведомление в любом случае
+            if (Notification.permission === "granted") {
+              // Воспроизводим звук
+              await notificationSound.play();
+              
+              const notification = new Notification(senderName, {
+                body: message.content,
+                icon: 'https://via.placeholder.com/64',
+                tag: 'message-' + Date.now(), // Уникальный тег для каждого уведомления
+                requireInteraction: true
+              });
+
+              notification.onclick = function() {
+                window.focus();
+                this.close();
+              };
+            }
+          } catch (error) {
+            console.error('Ошибка при показе уведомления:', error);
+          }
+        }
+        
+        // Всегда обновляем сообщения в чате, если это текущий чат
+        if (currentChat && message.conversationId === currentChat.id) {
+          // Добавляем новое сообщение в список
+          const messageElement = document.createElement('div');
+          messageElement.className = `message ${message.sender.id === userId ? 'sent' : 'received'}`;
+          messageElement.dataset.id = message.id;
+
+          const formattedDate = new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+          messageElement.innerHTML = `
+            ${message.content}
+            <span class="message-time">${formattedDate}</span>
+          `;
+
+          chatMessages.appendChild(messageElement);
+          
+          // Прокручиваем к последнему сообщению
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+
+          // Если это не наше сообщение, отмечаем его как прочитанное
+          if (message.sender.id !== userId) {
+            markMessagesAsRead(currentChat.id, [message.id]);
+          }
+        }
+
+        // В любом случае обновляем список чатов
+        await loadChats();
+      });
+
+      // Слушаем события прочтения сообщений
+      socket.on('messagesRead', (data) => {
+        console.log('Сообщения прочитаны:', data);
+        
+        // Если сообщения из текущего чата
+        if (currentChat && data.conversationId === currentChat.id) {
+          // Можно обновить статус сообщений в интерфейсе
+        }
+      });
+    }
+
+    // Подключение к WebSocket уведомлений
+    function connectNotificationsWebSocket() {
+      console.log('Подключение к WebSocket уведомлений:', `${API_URL}`);
+      
+      notificationSocket = io(`${API_URL}`, {
+        auth: { token }
+      });
+
+      notificationSocket.on('connect', () => {
+        console.log('WebSocket уведомлений подключен');
+      });
+
+      notificationSocket.on('disconnect', () => {
+        console.log('WebSocket уведомлений отключен');
+      });
+
+      notificationSocket.on('connect_error', (error) => {
+        console.error('Ошибка подключения WebSocket уведомлений:', error);
+      });
+
+      // Слушаем события новых уведомлений
+      notificationSocket.on('newNotification', (notificationData) => {
+        console.log('Новое уведомление:', notificationData);
+        
+        // Воспроизводим звук
+        notificationSound.play().catch(err => console.log('Ошибка воспроизведения звука:', err));
+        
+        // Создаем уведомление
+        const notification = new Notification(notificationData.type, {
+          body: notificationData.content,
+          icon: 'https://via.placeholder.com/64',
+          tag: 'notification',
+          silent: true, // Отключаем стандартный звук уведомления
+          requireInteraction: true // Уведомление не будет автоматически скрываться
+        });
+
+        notification.onclick = function() {
+          window.focus();
+          this.close();
+        };
+      });
+    }
+
+    // Проверка состояния сервера
+    async function checkServer() {
+      try {
+        errorMessage.textContent = 'Проверка соединения с сервером...';
+        
+        const response = await fetch(`${API_URL}`);
+        const data = await response.json();
+        
+        errorMessage.textContent = `Сервер доступен: ${JSON.stringify(data)}`;
+        
+        // Попробуем получить и вывести список доступных маршрутов
+        try {
+          const docsResponse = await fetch(`${API_URL}/docs-json`);
+          if (docsResponse.ok) {
+            const docsData = await docsResponse.json();
+            console.log('API документация:', docsData);
+            
+            // Вывести пути API
+            if (docsData.paths) {
+              console.log('Доступные маршруты API:');
+              Object.keys(docsData.paths).forEach(path => {
+                console.log(`- ${path}`);
+              });
+            }
+          }
+        } catch (e) {
+          console.error('Не удалось получить API документацию:', e);
+        }
+        
+      } catch (error) {
+        errorMessage.textContent = `Ошибка соединения с сервером: ${error.message}`;
+      }
+    }
+    
+    // Открыть Swagger документацию
+    function openSwagger() {
+      window.open(`${API_URL}/docs`, '_blank');
+    }
+
+    // Слушатели событий
+    if (!loginButton) {
+      console.error('Кнопка входа не найдена в DOM');
+    } else {
+      console.log('Кнопка входа найдена');
+      loginButton.onclick = (e) => {
+        e.preventDefault();
+        console.log('Клик по кнопке входа');
+        login();
+      };
+    }
+
+    if (!checkServerButton) {
+      console.error('Кнопка проверки сервера не найдена в DOM');
+    } else {
+      console.log('Кнопка проверки сервера найдена');
+      checkServerButton.onclick = (e) => {
+        e.preventDefault();
+        console.log('Клик по кнопке проверки сервера');
+        checkServer();
+      };
+    }
+
+    if (!openSwaggerButton) {
+      console.error('Кнопка Swagger не найдена в DOM');
+    } else {
+      console.log('Кнопка Swagger найдена');
+      openSwaggerButton.onclick = (e) => {
+        e.preventDefault();
+        console.log('Клик по кнопке Swagger');
+        openSwagger();
+      };
+    }
+
+    if (!messageForm) {
+      console.error('Форма сообщений не найдена в DOM');
+    } else {
+      console.log('Форма сообщений найдена');
+      messageForm.onsubmit = (e) => {
+        e.preventDefault();
+        console.log('Отправка сообщения');
+        const content = messageInput.value;
+        if (content.trim()) {
+          sendMessage(content);
+          messageInput.value = '';
+        }
+      };
+    }
+
+    if (!addChatButton) {
+      console.error('Кнопка добавления чата не найдена в DOM');
+    } else {
+      console.log('Кнопка добавления чата найдена');
+      addChatButton.onclick = () => {
+        console.log('Клик по кнопке добавления чата');
+        newChatForm.classList.toggle('visible');
+      };
+    }
+
+    if (!createChatButton) {
+      console.error('Кнопка создания чата не найдена в DOM');
+    } else {
+      console.log('Кнопка создания чата найдена');
+      createChatButton.onclick = () => {
+        console.log('Клик по кнопке создания чата');
+        const selectedUserId = parseInt(userSelect.value);
+        if (selectedUserId) {
+          createChat(selectedUserId);
+        }
+      };
+    }
+  </script>
+</body>
+</html> 
