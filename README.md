@@ -1,73 +1,114 @@
-# NestJS REST API boilerplate 🇺🇦
+# SocialClub - Современная Социальная Платформа
 
-[![image](https://github.com/brocoders/nestjs-boilerplate/assets/72293912/197da43e-02f4-4895-8d3e-b7a42a591c26)](https://github.com/new?template_name=nestjs-boilerplate&template_owner=brocoders)
+<p align="center">
+  <img src="https://via.placeholder.com/200x200?text=SocialClub" alt="SocialClub Logo" width="200"/>
+</p>
 
-![github action status](https://github.com/brocoders/nestjs-boilerplate/actions/workflows/docker-e2e.yml/badge.svg)
-[![renovate](https://img.shields.io/badge/renovate-enabled-%231A1F6C?logo=renovatebot)](https://app.renovatebot.com/dashboard)
-[![Static Badge](https://img.shields.io/badge/supported_by-brocoders-d91965?logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB3aWR0aD0iMTMwIiBoZWlnaHQ9IjE4NyIgdmlld0JveD0iMCAwIDEzMCAxODciIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI%2BCjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMF83NzExXzQ4OTEpIj4KPHBhdGggZD0iTTc1Ljk5NjcgNDUuNzUwNkM2NS4xMDg5IDQ2Ljg2MSA1Ny45MjMgNTguNDA5NyA2Mi4yNzgxIDY4Ljg0OEwxMDguNDQyIDE4N0w3My42MDEzIDE1NS4wMTlIMzQuODQwOUMyMC42ODY4IDE1NS4wMTkgOS4zNjM0OSAxNDMuNDcgOS4zNjM0OSAxMjkuMDM0Vjk0LjYxMDVDOS4zNjM0OSA5Mi4xNjc1IDguNDkyNDYgODkuNzI0NSA2Ljc1MDQyIDg3Ljk0NzdMMCA4MS4wNjNMNi43NTA0MiA3NC4xNzgxQzguNDkyNDYgNzIuNDAxNCA5LjM2MzQ5IDY5Ljk1ODQgOS4zNjM0OSA2Ny41MTU0VjMxLjA5MjZDOS4zNjM0OSAxMy43Njk2IDIzLjA4MjEgMCAzOS44NDkyIDBINTguMTQwN0w3NS45OTY3IDQ1Ljc1MDZaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMTI1LjY0NiAxMTIuMzc4Vjk0LjgzMjdDMTI1LjY0NiA5My43MjIyIDEyNi4wODEgOTIuNjExOCAxMjYuOTUyIDkxLjcyMzRMMTMwLjAwMSA4OC4zOTIxTDEyNi45NTIgODUuMDYwN0MxMjYuMDgxIDg0LjE3MjQgMTI1LjY0NiA4My4wNjE5IDEyNS42NDYgODEuOTUxNFY2OS43MzY1QzEyNS42NDYgNTYuNDExMSAxMTQuOTc2IDQ1Ljc1MDcgMTAyLjEyOCA0NS43NTA3SDc1Ljk5NzNMMTA1LjYxMiAxMzAuODExQzEwNS42MTIgMTMwLjgxMSAxMTAuNjIgMTMwLjgxMSAxMTAuODM4IDEzMC44MTFDMTE5LjExMyAxMjkuMDM1IDEyNS42NDYgMTIxLjQ4NCAxMjUuNjQ2IDExMi4zNzhaIiBmaWxsPSJ3aGl0ZSIvPgo8L2c%2BCjxkZWZzPgo8Y2xpcFBhdGggaWQ9ImNsaXAwXzc3MTFfNDg5MSI%2BCjxyZWN0IHdpZHRoPSIxMzAiIGhlaWdodD0iMTg3IiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM%2BCjwvc3ZnPgo%3D&logoColor=d91965)](https://brocoders.com/)
-[![Discord Badge](https://img.shields.io/badge/discord-NodeJS_boilerplate-d91965?style=flat&labelColor=5866f2&logo=discord&logoColor=white&link=https://discord.com/channels/520622812742811698/1197293125434093701)](https://discord.com/channels/520622812742811698/1197293125434093701)
+## Описание
 
-<br />
-<p align="center"><a href="https://discord.com/channels/520622812742811698/1197293125434093701"><img src="https://github.com/brocoders/nestjs-boilerplate/assets/72293912/c9d5fbf0-b56d-46b5-bb30-f96f44764bae" width="300"/></a></p>
-<br />
+SocialClub - это полноценная социальная платформа, разработанная с использованием современного стека технологий. Платформа предоставляет пользователям возможность общаться, делиться контентом и взаимодействовать друг с другом в режиме реального времени.
 
-## Description <!-- omit in toc -->
+## Основные функции
 
-NestJS REST API boilerplate for a typical project
+- 💬 **Мессенджер** - обмен сообщениями между пользователями в реальном времени
+- 📱 **Уведомления** - система уведомлений о новых сообщениях и действиях
+- 👍 **Система лайков** - возможность оценивать контент
+- 📝 **Публикации** - создание и просмотр публикаций пользователей
+- 🔐 **Аутентификация** - поддержка различных способов входа (email, Google, Apple)
+- 📊 **Профили пользователей** - детальная информация о пользователях
+- 📁 **Загрузка файлов** - поддержка загрузки изображений и документов
 
-[Full documentation here](/docs/readme.md)
+## Технический стек
 
-Demo: <https://nestjs-boilerplate-test.herokuapp.com/docs>
+- **Backend**: NestJS, TypeScript
+- **База данных**: PostgreSQL с TypeORM
+- **Веб-сокеты**: Socket.IO для обмена сообщениями и уведомлений в реальном времени
+- **Аутентификация**: JWT, OAuth2
+- **API**: REST API с Swagger документацией
+- **Локализация**: Многоязычная поддержка (i18n)
+- **Тестирование**: Jest для модульных и E2E тестов
 
-A fully compatible frontend boilerplate: <https://github.com/brocoders/extensive-react-boilerplate>
+## Установка и запуск
 
-Belongs to the [bc boilerplates](https://bcboilerplates.com/) ecosystem
+### Предварительные требования
 
-<https://github.com/user-attachments/assets/a66f114a-c714-4036-8eeb-20cbf04ae985>
+- Node.js (версия 14 или выше)
+- PostgreSQL
+- npm или yarn
 
-## Table of Contents <!-- omit in toc -->
+### Шаги по установке
 
-- [Features](#features)
-- [Contributors](#contributors)
-- [Support](#support)
+1. Клонируйте репозиторий
+   ```bash
+   git clone https://gitlab.com/edemkaaa/socialclub.git
+   cd socialclub
+   ```
 
-## Features
+2. Установите зависимости
+   ```bash
+   npm install
+   ```
 
-- [x] Database. Support [TypeORM](https://www.npmjs.com/package/typeorm) and [Mongoose](https://www.npmjs.com/package/mongoose).
-- [x] Seeding.
-- [x] Config Service ([@nestjs/config](https://www.npmjs.com/package/@nestjs/config)).
-- [x] Mailing ([nodemailer](https://www.npmjs.com/package/nodemailer)).
-- [x] Sign in and sign up via email.
-- [x] Social sign in (Apple, Facebook, Google).
-- [x] Admin and User roles.
-- [x] Internationalization/Translations (I18N) ([nestjs-i18n](https://www.npmjs.com/package/nestjs-i18n)).
-- [x] File uploads. Support local and Amazon S3 drivers.
-- [x] Swagger.
-- [x] E2E and units tests.
-- [x] Docker.
-- [x] CI (Github Actions).
+3. Настройте переменные окружения
+   ```bash
+   cp .env.example .env
+   # Отредактируйте .env файл с вашими настройками
+   ```
 
-## Contributors
+4. Запустите миграции базы данных
+   ```bash
+   npm run migration:run
+   ```
 
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-<table>
-  <tbody>
-    <tr>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Shchepotin"><img src="https://avatars.githubusercontent.com/u/6001723?v=4?s=100" width="100px;" alt="Vladyslav Shchepotin"/><br /><sub><b>Vladyslav Shchepotin</b></sub></a><br /><a href="#maintenance-Shchepotin" title="Maintenance">🚧</a> <a href="#doc-Shchepotin" title="Documentation">📖</a> <a href="#code-Shchepotin" title="Code">💻</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/SergeiLomako"><img src="https://avatars.githubusercontent.com/u/31205374?v=4?s=100" width="100px;" alt="SergeiLomako"/><br /><sub><b>SergeiLomako</b></sub></a><br /><a href="#code-SergeiLomako" title="Code">💻</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ElenVlass"><img src="https://avatars.githubusercontent.com/u/72293912?v=4?s=100" width="100px;" alt="Elena Vlasenko"/><br /><sub><b>Elena Vlasenko</b></sub></a><br /><a href="#doc-ElenVlass" title="Documentation">📖</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="http://brocoders.com"><img src="https://avatars.githubusercontent.com/u/226194?v=4?s=100" width="100px;" alt="Rodion"/><br /><sub><b>Rodion</b></sub></a><br /><a href="#business-sars" title="Business development">💼</a></td>
-    </tr>
-  </tbody>
-</table>
+5. Запустите проект
+   ```bash
+   npm run start:dev
+   ```
 
-<!-- markdownlint-restore -->
-<!-- prettier-ignore-end -->
+6. Откройте [http://localhost:3000](http://localhost:3000) в вашем браузере
 
-<!-- ALL-CONTRIBUTORS-LIST:END -->
+## Структура проекта
 
-## Support
+```
+src/
+├── auth/           # Аутентификация и авторизация
+├── chat/           # Функциональность чата
+├── database/       # Миграции и конфигурация базы данных
+├── messenger/      # Система обмена сообщениями
+├── notifications/  # Система уведомлений
+├── posts/          # Управление публикациями
+├── users/          # Управление пользователями
+└── utils/          # Общие утилиты
+```
 
-If you seek consulting, support, or wish to collaborate, please contact us via [boilerplates@brocoders.com](mailto:boilerplates@brocoders.com). For any inquiries regarding boilerplates, feel free to ask on [GitHub Discussions](https://github.com/brocoders/nestjs-boilerplate/discussions) or [Discord](https://discord.com/channels/520622812742811698/1197293125434093701).
+## Разработка
+
+### Тестирование
+
+```bash
+# Модульные тесты
+npm run test
+
+# e2e тесты
+npm run test:e2e
+```
+
+### Документация API
+
+При запуске проекта в режиме разработки, Swagger документация будет доступна по адресу [http://localhost:3000/docs](http://localhost:3000/docs)
+
+## Развертывание
+
+Проект настроен для развертывания с использованием Docker:
+
+```bash
+# Сборка Docker образа
+docker build -t socialclub .
+
+# Запуск контейнера
+docker run -p 3000:3000 socialclub
+```
+
+## Лицензия
+
+Проект распространяется под лицензией [MIT](LICENSE).
