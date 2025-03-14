@@ -18,6 +18,9 @@ import { LikeRepository } from './repositories/like.repository';
 import { PostsService } from './posts.service';
 import { PostsController } from './posts.controller';
 
+// Импортируем модуль поиска
+import { SearchModule } from '../search/search.module';
+
 // Если вы привязываете пользователей, импортируйте и User:
 import { UserEntity } from '../users/infrastructure/persistence/relational/entities/user.entity';
 
@@ -30,6 +33,7 @@ import { UserEntity } from '../users/infrastructure/persistence/relational/entit
       PostImage,
       UserEntity,
     ]),
+    SearchModule,
   ],
   providers: [PostsService, PostRepository, CommentRepository, LikeRepository],
   controllers: [PostsController],

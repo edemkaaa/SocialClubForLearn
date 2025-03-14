@@ -52,9 +52,6 @@ async function bootstrap() {
     .setDescription('API docs')
     .setVersion('1.0')
     .addBearerAuth()
-    .addTag('posts')
-    .addTag('notifications', 'Операции с уведомлениями')
-    .addTag('messenger', 'Операции с мессенджером')
     .build();
 
   const document = SwaggerModule.createDocument(app, options);

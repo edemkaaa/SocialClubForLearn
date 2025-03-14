@@ -49,7 +49,7 @@ class EnvironmentVariablesValidator {
   APP_HEADER_LANGUAGE: string;
 }
 
-export default registerAs<AppConfig>('app', () => {
+const appConfig = registerAs<AppConfig>('app', () => {
   validateConfig(process.env, EnvironmentVariablesValidator);
 
   return {
@@ -66,5 +66,16 @@ export default registerAs<AppConfig>('app', () => {
     apiPrefix: process.env.API_PREFIX || 'api',
     fallbackLanguage: process.env.APP_FALLBACK_LANGUAGE || 'en',
     headerLanguage: process.env.APP_HEADER_LANGUAGE || 'x-custom-lang',
+
+    // Добавляем конфигурацию Elasticsearch
+    elasticsearch: {
+      node: process.env.ELASTICSEARCH_NODE || 'http://localhost:9200',
+      username: process.env.ELASTICSEARCH_USERNAME || '',
+      password: process.env.ELASTICSEARCH_PASSWORD || '',
+      maxRetries: parseInt(process.env.ELASTICSEARCH_MAX_RETRIES || '10', 10),
+      requestTimeout: parseInt(process.env.ELASTICSEARCH_REQUEST_TIMEOUT || '30000', 10),
+    },
   };
 });
+
+export default appConfig;

@@ -27,6 +27,7 @@ import { ChatModule } from './chat/chat.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { NotificationsModule } from './notifications/notifications.module';
 import { MessengerModule } from './messenger/messenger.module';
+import { SearchModule } from './search/search.module';
 
 const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
   useClass: TypeOrmConfigService,
@@ -88,6 +89,7 @@ const infrastructureDatabaseModule = TypeOrmModule.forRootAsync({
     EventEmitterModule.forRoot(),
     NotificationsModule,
     MessengerModule,
+    SearchModule,
   ],
 })
 export class AppModule {}
