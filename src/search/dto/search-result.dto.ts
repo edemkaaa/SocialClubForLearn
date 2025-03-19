@@ -4,26 +4,27 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
  * DTO для представления одного найденного элемента
  */
 export class SearchHitDto {
-  @ApiProperty({ 
-    description: 'Название индекса', 
+  @ApiProperty({
+    description: 'Название индекса',
     example: 'Posts',
-    enum: ['posts', 'comments', 'users']
+    enum: ['posts', 'comments', 'users'],
   })
   index: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Идентификатор документа',
-    example: '42' 
+    example: '42',
   })
   id: string;
 
-  @ApiProperty({ 
-    description: 'Оценка релевантности запросу (чем выше, тем более релевантный результат)',
-    example: 1.24
+  @ApiProperty({
+    description:
+      'Оценка релевантности запросу (чем выше, тем более релевантный результат)',
+    example: 1.24,
   })
   score: number;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Оригинальные данные документа',
     example: {
       id: 42,
@@ -32,16 +33,16 @@ export class SearchHitDto {
       authorId: 1,
       authorName: 'Иван Иванов',
       createdAt: '2025-03-10T12:00:00Z',
-    }
+    },
   })
   source: Record<string, any>;
 
-  @ApiPropertyOptional({ 
-    description: 'Подсвеченные части документа с найденными ключевыми словами', 
+  @ApiPropertyOptional({
+    description: 'Подсвеченные части документа с найденными ключевыми словами',
     example: {
       title: ['Привет <em>мир</em>!'],
-      content: ['Это тестовый <em>пост</em>']
-    }
+      content: ['Это тестовый <em>пост</em>'],
+    },
   })
   highlight?: Record<string, string[]>;
 }
@@ -50,18 +51,18 @@ export class SearchHitDto {
  * DTO для представления результатов поиска
  */
 export class SearchResultDto {
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Общее количество найденных элементов',
-    example: { value: 42, relation: 'eq' }
+    example: { value: 42, relation: 'eq' },
   })
   total: {
     value: number;
     relation: string;
   };
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Найденные документы',
-    type: [SearchHitDto]
+    type: [SearchHitDto],
   })
   hits: SearchHitDto[];
-} 
+}

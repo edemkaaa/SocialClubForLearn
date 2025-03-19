@@ -8,7 +8,7 @@ export type AppConfig = {
   apiPrefix: string;
   fallbackLanguage: string;
   headerLanguage: string;
-  
+
   // Добавляем тип для конфигурации Elasticsearch
   elasticsearch: {
     node: string;

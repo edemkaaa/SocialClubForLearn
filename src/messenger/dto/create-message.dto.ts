@@ -36,7 +36,8 @@ export class CreateMessageDto {
   content: string;
 
   @ApiProperty({
-    description: 'Дополнительные метаданные сообщения (размер файла, координаты и т.д.)',
+    description:
+      'Дополнительные метаданные сообщения (размер файла, координаты и т.д.)',
     required: false,
     example: { fileSize: 1024, fileName: 'document.pdf' },
   })

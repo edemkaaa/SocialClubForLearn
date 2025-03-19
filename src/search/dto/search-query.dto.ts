@@ -1,5 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class SearchQueryDto {
@@ -8,7 +14,10 @@ export class SearchQueryDto {
   @IsNotEmpty()
   q: string;
 
-  @ApiPropertyOptional({ description: 'Начальная позиция (для пагинации)', default: 0 })
+  @ApiPropertyOptional({
+    description: 'Начальная позиция (для пагинации)',
+    default: 0,
+  })
   @IsOptional()
   @IsNumber()
   @Min(0)
@@ -21,4 +30,4 @@ export class SearchQueryDto {
   @Min(1)
   @Type(() => Number)
   size?: number = 10;
-} 
+}

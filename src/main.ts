@@ -55,7 +55,7 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, options);
-  
+
   // Добавляем документацию по WebSocket
   const wsDocument = {
     ...document,
@@ -66,37 +66,65 @@ async function bootstrap() {
         WebSocketEvent: {
           type: 'object',
           properties: {
-            event: { type: 'string', example: 'newMessage', description: 'Название события' },
+            event: {
+              type: 'string',
+              example: 'newMessage',
+              description: 'Название события',
+            },
             data: { type: 'object', description: 'Данные события' },
           },
         },
         MessageEvent: {
           type: 'object',
           properties: {
-            event: { type: 'string', example: 'newMessage', description: 'Событие нового сообщения' },
-            data: { 
+            event: {
+              type: 'string',
+              example: 'newMessage',
+              description: 'Событие нового сообщения',
+            },
+            data: {
               type: 'object',
               properties: {
                 id: { type: 'number', example: 1 },
                 content: { type: 'string', example: 'Привет!' },
                 type: { type: 'string', example: 'text' },
                 status: { type: 'string', example: 'sent' },
-                sender: { type: 'object', properties: { id: { type: 'number' } } }
-              } 
+                sender: {
+                  type: 'object',
+                  properties: { id: { type: 'number' } },
+                },
+              },
             },
           },
         },
         ReadEvent: {
           type: 'object',
           properties: {
-            event: { type: 'string', example: 'messagesRead', description: 'Событие прочтения сообщений' },
-            data: { 
+            event: {
+              type: 'string',
+              example: 'messagesRead',
+              description: 'Событие прочтения сообщений',
+            },
+            data: {
               type: 'object',
               properties: {
-                userId: { type: 'number', example: 1, description: 'ID пользователя, прочитавшего сообщения' },
-                conversationId: { type: 'number', example: 1, description: 'ID чата' },
-                messageIds: { type: 'array', items: { type: 'number' }, example: [1, 2, 3], description: 'ID прочитанных сообщений' }
-              } 
+                userId: {
+                  type: 'number',
+                  example: 1,
+                  description: 'ID пользователя, прочитавшего сообщения',
+                },
+                conversationId: {
+                  type: 'number',
+                  example: 1,
+                  description: 'ID чата',
+                },
+                messageIds: {
+                  type: 'array',
+                  items: { type: 'number' },
+                  example: [1, 2, 3],
+                  description: 'ID прочитанных сообщений',
+                },
+              },
             },
           },
         },
@@ -148,7 +176,7 @@ const socket = io('http://localhost:3000/messenger', {
       },
     },
   };
-  
+
   SwaggerModule.setup('docs', app, wsDocument);
 
   await app.listen(configService.getOrThrow('app.port', { infer: true }));

@@ -17,13 +17,13 @@ export class SearchService implements OnModuleInit {
 
   constructor(
     private readonly elasticsearchService: ElasticsearchService,
-    
+
     @InjectRepository(PostEntity, 'default')
     private readonly postRepository: Repository<PostEntity>,
-    
+
     @InjectRepository(Comment, 'default')
     private readonly commentRepository: Repository<Comment>,
-    
+
     @InjectRepository(UserEntity, 'default')
     private readonly userRepository: Repository<UserEntity>,
   ) {}
@@ -35,11 +35,13 @@ export class SearchService implements OnModuleInit {
     try {
       // Создаем индексы
       await this.createIndices();
-      
+
       // Индексируем существующие данные
       await this.indexExistingData();
     } catch (error) {
-      this.logger.error(`Ошибка инициализации поискового сервиса: ${error.message}`);
+      this.logger.error(
+        `Ошибка инициализации поискового сервиса: ${error.message}`,
+      );
     }
   }
 
@@ -49,40 +51,50 @@ export class SearchService implements OnModuleInit {
   async indexExistingData(): Promise<void> {
     try {
       this.logger.log('Начинаем индексацию существующих данных...');
-      
+
       // Индексируем пользователей
       const users = await this.userRepository.find();
       this.logger.log(`Найдено ${users.length} пользователей для индексации`);
-      
+
       for (const user of users) {
-        await this.indexUser(user).catch(error => {
-          this.logger.error(`Ошибка индексации пользователя ${user.id}: ${error.message}`);
+        await this.indexUser(user).catch((error) => {
+          this.logger.error(
+            `Ошибка индексации пользователя ${user.id}: ${error.message}`,
+          );
         });
       }
-      
+
       // Индексируем посты
       const posts = await this.postRepository.find({ relations: ['user'] });
       this.logger.log(`Найдено ${posts.length} постов для индексации`);
-      
+
       for (const post of posts) {
-        await this.indexPost(post).catch(error => {
-          this.logger.error(`Ошибка индексации поста ${post.id}: ${error.message}`);
+        await this.indexPost(post).catch((error) => {
+          this.logger.error(
+            `Ошибка индексации поста ${post.id}: ${error.message}`,
+          );
         });
       }
-      
+
       // Индексируем комментарии
-      const comments = await this.commentRepository.find({ relations: ['post', 'user'] });
+      const comments = await this.commentRepository.find({
+        relations: ['post', 'user'],
+      });
       this.logger.log(`Найдено ${comments.length} комментариев для индексации`);
-      
+
       for (const comment of comments) {
-        await this.indexComment(comment).catch(error => {
-          this.logger.error(`Ошибка индексации комментария ${comment.id}: ${error.message}`);
+        await this.indexComment(comment).catch((error) => {
+          this.logger.error(
+            `Ошибка индексации комментария ${comment.id}: ${error.message}`,
+          );
         });
       }
-      
+
       this.logger.log('Индексация существующих данных завершена');
     } catch (error) {
-      this.logger.error(`Ошибка при индексации существующих данных: ${error.message}`);
+      this.logger.error(
+        `Ошибка при индексации существующих данных: ${error.message}`,
+      );
       throw error;
     }
   }
@@ -100,7 +112,8 @@ export class SearchService implements OnModuleInit {
           title: post.title,
           content: post.content,
           authorId: post.user?.id,
-          authorName: `${post.user?.firstName || ''} ${post.user?.lastName || ''}`.trim(),
+          authorName:
+            `${post.user?.firstName || ''} ${post.user?.lastName || ''}`.trim(),
           createdAt: post.createdAt,
           updatedAt: post.updatedAt,
         },
@@ -170,7 +183,9 @@ export class SearchService implements OnModuleInit {
       });
       this.logger.log(`Пост с ID ${postId} удален из индекса`);
     } catch (error) {
-      this.logger.error(`Ошибка при удалении поста из индекса: ${error.message}`);
+      this.logger.error(
+        `Ошибка при удалении поста из индекса: ${error.message}`,
+      );
       throw error;
     }
   }
@@ -186,7 +201,9 @@ export class SearchService implements OnModuleInit {
       });
       this.logger.log(`Комментарий с ID ${commentId} удален из индекса`);
     } catch (error) {
-      this.logger.error(`Ошибка при удалении комментария из индекса: ${error.message}`);
+      this.logger.error(
+        `Ошибка при удалении комментария из индекса: ${error.message}`,
+      );
       throw error;
     }
   }
@@ -202,7 +219,9 @@ export class SearchService implements OnModuleInit {
       });
       this.logger.log(`Пользователь с ID ${userId} удален из индекса`);
     } catch (error) {
-      this.logger.error(`Ошибка при удалении пользователя из индекса: ${error.message}`);
+      this.logger.error(
+        `Ошибка при удалении пользователя из индекса: ${error.message}`,
+      );
       throw error;
     }
   }
@@ -219,14 +238,17 @@ export class SearchService implements OnModuleInit {
         query: {
           multi_match: {
             query: text,
-            fields: ['title^3', 'content^2', 'text^2', 'firstName^1', 'lastName^1'],
+            fields: [
+              'title^3',
+              'content^2',
+              'text^2',
+              'firstName^1',
+              'lastName^1',
+            ],
             fuzziness: 'AUTO',
           },
         },
-        sort: [
-          { _score: { order: 'desc' } },
-          { createdAt: { order: 'desc' } }
-        ],
+        sort: [{ _score: { order: 'desc' } }, { createdAt: { order: 'desc' } }],
         highlight: {
           fields: {
             title: {},
@@ -301,9 +323,10 @@ export class SearchService implements OnModuleInit {
       }
 
       // Создание индекса для комментариев
-      const commentsIndexExists = await this.elasticsearchService.indices.exists({
-        index: this.commentsIndex,
-      });
+      const commentsIndexExists =
+        await this.elasticsearchService.indices.exists({
+          index: this.commentsIndex,
+        });
 
       if (!commentsIndexExists) {
         this.logger.log(`Создание индекса ${this.commentsIndex}...`);
@@ -383,4 +406,4 @@ export class SearchService implements OnModuleInit {
       throw error;
     }
   }
-} 
+}

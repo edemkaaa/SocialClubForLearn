@@ -39,4 +39,4 @@ export class ConversationResponseDto {
 
   @ApiProperty({ type: [UserResponseDto] })
   participants: UserResponseDto[];
-} 
+}

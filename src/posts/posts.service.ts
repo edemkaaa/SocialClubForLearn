@@ -55,7 +55,7 @@ export class PostsService {
     });
 
     const savedPost = await this.postRepository.save(post);
-    
+
     // Индексируем созданный пост в Elasticsearch
     try {
       await this.searchService.indexPost(savedPost);
@@ -63,7 +63,7 @@ export class PostsService {
       // В случае ошибки индексации продолжаем работу, но логируем ошибку
       console.error('Ошибка индексации поста:', error);
     }
-    
+
     return savedPost;
   }
 
@@ -88,23 +88,23 @@ export class PostsService {
   async updatePost(id: number, dto: UpdatePostDto): Promise<PostEntity> {
     const post = await this.findPostById(id);
     Object.assign(post, dto);
-    
+
     const updatedPost = await this.postRepository.save(post);
-    
+
     // Обновляем пост в Elasticsearch
     try {
       await this.searchService.indexPost(updatedPost);
     } catch (error) {
       console.error('Ошибка обновления индексации поста:', error);
     }
-    
+
     return updatedPost;
   }
 
   async removePost(id: number): Promise<void> {
     const post = await this.findPostById(id);
     await this.postRepository.remove(post);
-    
+
     // Удаляем пост из Elasticsearch
     try {
       await this.searchService.removePostFromIndex(id);
@@ -120,7 +120,9 @@ export class PostsService {
 
     let user: UserEntity | undefined = undefined;
     if (userId) {
-      const foundUser = await this.userRepository.findOne({ where: { id: userId } });
+      const foundUser = await this.userRepository.findOne({
+        where: { id: userId },
+      });
       if (!foundUser) {
         throw new NotFoundException(`User with ID=${userId} not found`);
       }
@@ -138,14 +140,14 @@ export class PostsService {
 
     const comment = this.commentRepository.create(commentData);
     const savedComment = await this.commentRepository.save(comment);
-    
+
     // Индексируем созданный комментарий в Elasticsearch
     try {
       await this.searchService.indexComment(savedComment);
     } catch (error) {
       console.error('Ошибка индексации комментария:', error);
     }
-    
+
     return savedComment;
   }
 

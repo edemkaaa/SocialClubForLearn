@@ -18,7 +18,10 @@ export class MessageResponseDto {
   @ApiProperty({ example: false })
   isEdited: boolean;
 
-  @ApiProperty({ example: { fileSize: 1024, fileName: 'document.pdf' }, required: false })
+  @ApiProperty({
+    example: { fileSize: 1024, fileName: 'document.pdf' },
+    required: false,
+  })
   metadata: any;
 
   @ApiProperty({ example: '2025-03-11T00:05:49.960Z' })
@@ -29,4 +32,4 @@ export class MessageResponseDto {
 
   @ApiProperty({ type: UserResponseDto })
   sender: UserResponseDto;
-} 
+}

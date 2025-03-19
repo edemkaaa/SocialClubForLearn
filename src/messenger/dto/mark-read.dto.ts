@@ -10,4 +10,4 @@ export class MarkReadDto {
   @IsArray()
   @IsNotEmpty()
   messageIds: number[];
-} 
+}

@@ -15,11 +15,11 @@ import { MarkReadDto } from '../dto/mark-read.dto';
 
 /**
  * WebSocket Gateway для мессенджера
- * 
+ *
  * События для клиентов:
  * - 'newMessage': отправляется, когда пользователь получает новое сообщение
  * - 'messagesRead': отправляется, когда сообщения пользователя отмечаются как прочитанные
- * 
+ *
  * События от клиентов:
  * - 'sendMessage': отправка нового сообщения
  * - 'markAsRead': отметка сообщений как прочитанные
@@ -152,12 +152,12 @@ export class MessengerGateway
       }
 
       const message = await this.messengerService.sendMessage(userId, payload);
-      
+
       // Отправляем сообщение всем в комнате
       this.server
         .to(`conversation-${payload.conversationId}`)
         .emit('newMessage', message);
-        
+
       return { success: true, message };
     } catch (error) {
       this.logger.error(`Error sending message: ${error.message}`);
@@ -173,8 +173,8 @@ export class MessengerGateway
    */
   @SubscribeMessage('markAsRead')
   async handleMarkAsRead(
-    client: Socket, 
-    payload: { conversationId: number, messageIds: number[] }
+    client: Socket,
+    payload: { conversationId: number; messageIds: number[] },
   ) {
     try {
       const userId = client.data.userId;
@@ -187,16 +187,16 @@ export class MessengerGateway
         payload.conversationId,
         payload.messageIds,
       );
-      
+
       // Отправляем информацию о прочтении всем в комнате
       this.server
         .to(`conversation-${payload.conversationId}`)
         .emit('messagesRead', {
           userId,
           conversationId: payload.conversationId,
-          messageIds: payload.messageIds
+          messageIds: payload.messageIds,
         });
-        
+
       return { success: true };
     } catch (error) {
       this.logger.error(`Error marking messages as read: ${error.message}`);

@@ -73,7 +73,10 @@ const appConfig = registerAs<AppConfig>('app', () => {
       username: process.env.ELASTICSEARCH_USERNAME || '',
       password: process.env.ELASTICSEARCH_PASSWORD || '',
       maxRetries: parseInt(process.env.ELASTICSEARCH_MAX_RETRIES || '10', 10),
-      requestTimeout: parseInt(process.env.ELASTICSEARCH_REQUEST_TIMEOUT || '30000', 10),
+      requestTimeout: parseInt(
+        process.env.ELASTICSEARCH_REQUEST_TIMEOUT || '30000',
+        10,
+      ),
     },
   };
 });

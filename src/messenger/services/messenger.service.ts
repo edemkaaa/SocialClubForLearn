@@ -1,7 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Not, Repository } from 'typeorm';
-import { Conversation, ConversationType } from '../entities/conversation.entity';
+import {
+  Conversation,
+  ConversationType,
+} from '../entities/conversation.entity';
 import { ChatMessage, MessageStatus } from '../entities/chat-message.entity';
 import { CreateConversationDto } from '../dto/create-conversation.dto';
 import { CreateMessageDto } from '../dto/create-message.dto';
@@ -19,8 +22,15 @@ export class MessengerService {
   ) {}
 
   // Создание нового чата
-  async createConversation(createConversationDto: CreateConversationDto): Promise<Conversation> {
-    const { participants, name, type = ConversationType.DIRECT, avatar } = createConversationDto;
+  async createConversation(
+    createConversationDto: CreateConversationDto,
+  ): Promise<Conversation> {
+    const {
+      participants,
+      name,
+      type = ConversationType.DIRECT,
+      avatar,
+    } = createConversationDto;
 
     // Находим участников
     const users = await this.userRepository.find({
@@ -69,7 +79,10 @@ export class MessengerService {
   }
 
   // Отправка сообщения
-  async sendMessage(userId: number, messageDto: CreateMessageDto): Promise<ChatMessage> {
+  async sendMessage(
+    userId: number,
+    messageDto: CreateMessageDto,
+  ): Promise<ChatMessage> {
     const { conversationId, content, type } = messageDto;
 
     // Проверяем, что отправитель существует
@@ -109,7 +122,10 @@ export class MessengerService {
   }
 
   // Получение сообщений чата
-  async getConversationMessages(conversationId: number, userId: number): Promise<ChatMessage[]> {
+  async getConversationMessages(
+    conversationId: number,
+    userId: number,
+  ): Promise<ChatMessage[]> {
     // Проверяем, что чат существует
     const conversation = await this.conversationRepository.findOne({
       where: { id: conversationId },

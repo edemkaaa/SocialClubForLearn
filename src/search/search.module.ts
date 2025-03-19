@@ -11,30 +11,35 @@ import { UserEntity } from '../users/infrastructure/persistence/relational/entit
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      PostEntity,
-      Comment,
-      UserEntity,
-    ]),
+    TypeOrmModule.forFeature([PostEntity, Comment, UserEntity]),
     ElasticsearchModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService<AllConfigType>) => {
-        const username = configService.get('app.elasticsearch.username', { infer: true });
-        const password = configService.get('app.elasticsearch.password', { infer: true });
-        
+        const username = configService.get('app.elasticsearch.username', {
+          infer: true,
+        });
+        const password = configService.get('app.elasticsearch.password', {
+          infer: true,
+        });
+
         const config: Record<string, any> = {
           node: configService.get('app.elasticsearch.node', { infer: true }),
-          maxRetries: configService.get('app.elasticsearch.maxRetries', { infer: true }),
-          requestTimeout: configService.get('app.elasticsearch.requestTimeout', { infer: true }),
+          maxRetries: configService.get('app.elasticsearch.maxRetries', {
+            infer: true,
+          }),
+          requestTimeout: configService.get(
+            'app.elasticsearch.requestTimeout',
+            { infer: true },
+          ),
         };
-        
+
         if (username && password) {
           config.auth = {
             username,
             password,
           };
         }
-        
+
         return config;
       },
       inject: [ConfigService],
@@ -44,4 +49,4 @@ import { UserEntity } from '../users/infrastructure/persistence/relational/entit
   providers: [SearchService],
   exports: [SearchService],
 })
-export class SearchModule {} 
+export class SearchModule {}

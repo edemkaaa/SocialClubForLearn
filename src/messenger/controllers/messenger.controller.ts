@@ -13,18 +13,18 @@ import { MessengerService } from '../services/messenger.service';
 import { CreateMessageDto } from '../dto/create-message.dto';
 import { CreateConversationDto } from '../dto/create-conversation.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { 
-  ApiTags, 
-  ApiResponse, 
-  ApiBearerAuth, 
-  ApiOperation, 
-  ApiParam, 
+import {
+  ApiTags,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
   ApiBody,
   ApiOkResponse,
   ApiCreatedResponse,
   ApiUnauthorizedResponse,
   ApiForbiddenResponse,
-  ApiNotFoundResponse
+  ApiNotFoundResponse,
 } from '@nestjs/swagger';
 import { ConversationResponseDto } from '../dto/conversation.response.dto';
 import { MessageResponseDto } from '../dto/message.response.dto';
@@ -39,8 +39,8 @@ export class MessengerController {
 
   @Get()
   @ApiOperation({ summary: 'Получить список чатов пользователя' })
-  @ApiOkResponse({ 
-    description: 'Список чатов успешно получен', 
+  @ApiOkResponse({
+    description: 'Список чатов успешно получен',
     type: [ConversationResponseDto],
   })
   @ApiUnauthorizedResponse({ description: 'Не авторизован' })
@@ -51,8 +51,8 @@ export class MessengerController {
   @Post('conversations')
   @ApiOperation({ summary: 'Создать новый чат' })
   @ApiBody({ type: CreateConversationDto })
-  @ApiCreatedResponse({ 
-    description: 'Чат успешно создан', 
+  @ApiCreatedResponse({
+    description: 'Чат успешно создан',
     type: ConversationResponseDto,
   })
   @ApiUnauthorizedResponse({ description: 'Не авторизован' })
@@ -65,36 +65,35 @@ export class MessengerController {
     if (!createConversationDto.participants.includes(req.user.id)) {
       createConversationDto.participants.push(req.user.id);
     }
-    
+
     return this.messengerService.createConversation(createConversationDto);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Получить информацию о чате' })
   @ApiParam({ name: 'id', description: 'ID чата', type: 'number' })
-  @ApiOkResponse({ 
-    description: 'Информация о чате успешно получена', 
+  @ApiOkResponse({
+    description: 'Информация о чате успешно получена',
     type: ConversationResponseDto,
   })
   @ApiUnauthorizedResponse({ description: 'Не авторизован' })
   @ApiNotFoundResponse({ description: 'Чат не найден' })
-  async getConversation(
-    @Param('id', ParseIntPipe) id: number,
-    @Request() req,
-  ) {
+  async getConversation(@Param('id', ParseIntPipe) id: number, @Request() req) {
     return this.messengerService.getConversationById(id);
   }
 
   @Get(':id/messages')
   @ApiOperation({ summary: 'Получить сообщения чата' })
   @ApiParam({ name: 'id', description: 'ID чата', type: 'number' })
-  @ApiOkResponse({ 
-    description: 'Сообщения чата успешно получены', 
+  @ApiOkResponse({
+    description: 'Сообщения чата успешно получены',
     type: [MessageResponseDto],
   })
   @ApiUnauthorizedResponse({ description: 'Не авторизован' })
   @ApiForbiddenResponse({ description: 'Доступ запрещен' })
-  @ApiNotFoundResponse({ description: 'Чат не найден или пользователь не является участником' })
+  @ApiNotFoundResponse({
+    description: 'Чат не найден или пользователь не является участником',
+  })
   async getConversationMessages(
     @Param('id', ParseIntPipe) id: number,
     @Request() req,
@@ -105,13 +104,15 @@ export class MessengerController {
   @Post('messages')
   @ApiOperation({ summary: 'Отправить новое сообщение' })
   @ApiBody({ type: CreateMessageDto })
-  @ApiCreatedResponse({ 
-    description: 'Сообщение успешно отправлено', 
+  @ApiCreatedResponse({
+    description: 'Сообщение успешно отправлено',
     type: MessageResponseDto,
   })
   @ApiUnauthorizedResponse({ description: 'Не авторизован' })
   @ApiForbiddenResponse({ description: 'Доступ запрещен' })
-  @ApiNotFoundResponse({ description: 'Чат не найден или пользователь не является участником' })
+  @ApiNotFoundResponse({
+    description: 'Чат не найден или пользователь не является участником',
+  })
   async sendMessage(
     @Body() createMessageDto: CreateMessageDto,
     @Request() req,
@@ -130,23 +131,25 @@ export class MessengerController {
       properties: {
         success: {
           type: 'boolean',
-          example: true
-        }
-      }
-    }
+          example: true,
+        },
+      },
+    },
   })
   @ApiUnauthorizedResponse({ description: 'Не авторизован' })
   @ApiForbiddenResponse({ description: 'Доступ запрещен' })
-  @ApiNotFoundResponse({ description: 'Чат не найден или пользователь не является участником' })
+  @ApiNotFoundResponse({
+    description: 'Чат не найден или пользователь не является участником',
+  })
   async markMessagesAsRead(
     @Param('id', ParseIntPipe) conversationId: number,
     @Body() body: MarkReadDto,
     @Request() req,
   ) {
     await this.messengerService.markMessagesAsRead(
-      req.user.id, 
-      conversationId, 
-      body.messageIds
+      req.user.id,
+      conversationId,
+      body.messageIds,
     );
     return { success: true };
   }
